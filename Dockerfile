@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.1-base-ubuntu20.04
+FROM nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04
 
 # Install dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -23,6 +23,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   python3-opencv \
   && rm -rf /var/lib/apt/lists/*
 
+
+
 RUN sed -i "s/# en_US.UTF-8/en_US.UTF-8/" /etc/locale.gen \
   && locale-gen
 ENV LANG=en_US.UTF-8
@@ -43,11 +45,29 @@ RUN curl -fsSL "https://github.com/boxboat/fixuid/releases/download/v0.4.1/fixui
   mkdir -p /etc/fixuid && \
   printf "user: coder\ngroup: coder\n" > /etc/fixuid/config.yml
 
+# Install miniconda3
+ENV PATH /opt/conda/bin:$PATH
+RUN apt-get update --fix-missing && \
+    apt-get install -y wget bzip2 curl git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    /opt/conda/bin/conda clean -tipsy && \
+    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda init bash" && \
+    echo "conda activate base" >> ~/.bashrc
+
+RUN /bin/bash -c "source activate base && conda install pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=11.3 -c pytorch -c conda-forge"    
+
 # Install code-server
 WORKDIR /tmp
 ENV CODE_SERVER_VERSION=4.0.1
 RUN curl -fOL https://github.com/cdr/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server_${CODE_SERVER_VERSION}_${ARCH}.deb
 RUN dpkg -i ./code-server_${CODE_SERVER_VERSION}_${ARCH}.deb && rm ./code-server_${CODE_SERVER_VERSION}_${ARCH}.deb
+
 COPY ./entrypoint.sh /usr/bin/entrypoint.sh
 
 # Switch to default user
@@ -55,6 +75,7 @@ USER coder
 ENV USER=coder
 ENV HOME=/home/coder
 WORKDIR /projects
+RUN pip install dagster dagit aim
 
-EXPOSE 8443
-ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8443", "--cert", "--disable-telemetry", "."]
+EXPOSE 8080 3000
+ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "--cert", "--disable-telemetry", "."]

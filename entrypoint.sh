@@ -17,4 +17,6 @@ if [ "${DOCKER_USER-}" ] && [ "$DOCKER_USER" != "$USER" ]; then
   sudo sed -i "/coder/d" /etc/sudoers.d/nopasswd
 fi
 
-dumb-init /usr/bin/code-server "$@"
+/home/coder/.local/bin/dagit -d /projects/sunny -f /projects/sunny/main.py &
+dumb-init /usr/bin/code-server --config /projects/config.yml "$@"
+
