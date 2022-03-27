@@ -1,4 +1,5 @@
 #!/bin/sh
+# export PATH=/home/coder/.local/bin:/home/dong/anaconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 set -eu
 
 # We do this first to ensure sudo works below when renaming the user.
@@ -16,7 +17,11 @@ if [ "${DOCKER_USER-}" ] && [ "$DOCKER_USER" != "$USER" ]; then
 
   sudo sed -i "/coder/d" /etc/sudoers.d/nopasswd
 fi
+  rm -rf /projects/main/.aim
+. /opt/conda/etc/profile.d/conda.sh && conda init bash && conda activate base
+echo "source /home/coder/.bashrc"
 
-/home/coder/.local/bin/dagit -d /projects/sunny -f /projects/sunny/main.py &
-dumb-init /usr/bin/code-server --config /projects/config.yml "$@"
+cd /projects/main && aim init && aim up --host 0.0.0.0 &
+dagit -d /projects/main -f /projects/main/main.py -h 0.0.0.0 &
+dumb-init /usr/bin/code-server --config /home/coder/config/config.yml "$@"
 

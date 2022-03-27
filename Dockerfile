@@ -74,8 +74,11 @@ COPY ./entrypoint.sh /usr/bin/entrypoint.sh
 USER coder
 ENV USER=coder
 ENV HOME=/home/coder
+ENV PATH "$PATH:/home/coder/.local/bin"
+WORKDIR /home/coder
+RUN pip install dagit aim
+
 WORKDIR /projects
-RUN pip install dagster dagit aim
 
 EXPOSE 8080 3000
 ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "--cert", "--disable-telemetry", "."]
