@@ -48,19 +48,19 @@ RUN curl -fsSL "https://github.com/boxboat/fixuid/releases/download/v0.4.1/fixui
 # Install miniconda3
 ENV PATH /opt/conda/bin:$PATH
 RUN apt-get update --fix-missing && \
-    apt-get install -y wget bzip2 curl git && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+  apt-get install -y wget bzip2 curl git && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh && \
-    /opt/conda/bin/conda clean -tipsy && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda init bash" && \
-    echo "conda activate base" >> ~/.bashrc
-
-RUN /bin/bash -c "source activate base && conda install pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=11.3 -c pytorch -c conda-forge"    
+  /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+  rm ~/miniconda.sh && \
+  ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+  echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+  /opt/conda/bin/conda clean -afy
+  
+RUN conda create -n my_env python=3.8
+RUN /bin/bash -c "activate my_env && conda install pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=11.3 -c pytorch -c conda-forge"
+RUN pip install aim dagit
 
 # Install code-server
 WORKDIR /tmp
@@ -75,8 +75,8 @@ USER coder
 ENV USER=coder
 ENV HOME=/home/coder
 ENV PATH "$PATH:/home/coder/.local/bin"
-WORKDIR /home/coder
-RUN pip install dagit aim
+# WORKDIR /home/coder
+# RUN pip install 
 
 WORKDIR /projects
 
