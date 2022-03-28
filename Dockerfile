@@ -59,12 +59,12 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
   /opt/conda/bin/conda clean -afy
   
 RUN conda create -n my_env python=3.8
-RUN /bin/bash -c "activate my_env && conda install pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=11.3 -c pytorch -c conda-forge"
+RUN /bin/bash -c "activate my_env && conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch"
 RUN pip install aim dagit
 
 # Install code-server
 WORKDIR /tmp
-ENV CODE_SERVER_VERSION=4.0.1
+ENV CODE_SERVER_VERSION=3.12.0
 RUN curl -fOL https://github.com/cdr/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server_${CODE_SERVER_VERSION}_${ARCH}.deb
 RUN dpkg -i ./code-server_${CODE_SERVER_VERSION}_${ARCH}.deb && rm ./code-server_${CODE_SERVER_VERSION}_${ARCH}.deb
 
