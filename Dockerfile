@@ -60,7 +60,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
   
 RUN conda create -n my_env python=3.8
 RUN /bin/bash -c "activate my_env && conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch"
-RUN pip install aim dagit
+RUN pip install aim dagit dagster
 
 # Install code-server
 WORKDIR /tmp
@@ -77,7 +77,6 @@ ENV HOME=/home/coder
 ENV PATH "$PATH:/home/coder/.local/bin"
 # WORKDIR /home/coder
 # RUN pip install 
-
 WORKDIR /projects
 
 EXPOSE 8080 3000
