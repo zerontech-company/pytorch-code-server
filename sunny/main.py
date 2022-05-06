@@ -1,11 +1,27 @@
 
 from dagster import get_dagster_logger, job, op, In
 
-from my_mnist import *
+from foodTrain import *
+from myFoodTrain import *
+
 
 @op
-def setHyper():
-    epoch = 20
+def setHyper1():
+    epoch = 30
+    hyper = { "batch_size": 50, "num_classes": 10, "learning_rate": 0.001, "num_epochs": epoch }
+
+    return hyper
+
+@op
+def setHyper2():
+    epoch = 10
+    hyper = { "batch_size": 50, "num_classes": 10, "learning_rate": 0.001, "num_epochs": epoch }
+
+    return hyper
+
+@op
+def setHyper3():
+    epoch = 15
     hyper = { "batch_size": 50, "num_classes": 10, "learning_rate": 0.001, "num_epochs": epoch }
 
     return hyper
@@ -17,13 +33,12 @@ def print_test(msg):
 
 
 @job
-def startTrainMnist():
+def startTrainFoodObjectDetection():
 
-    for i in range(2):
-        epoch = i*2 + 10
-        hyper = { "batch_size": 50, "num_classes": 10, "learning_rate": 0.001, "num_epochs": epoch }
-        #hyper = [ 50, 10, 0.001, epoch ]
-        hyper = setHyper()
-        #print_test(100)
-        #setHyperParam(hyper)
-        doTrainMNIST(hyper)
+    hyper = setHyper1()
+    doTrain(hyper)
+
+    hyper = setHyper2()
+    doTrain(hyper)
+        
+

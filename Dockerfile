@@ -23,8 +23,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   python3-opencv \
   && rm -rf /var/lib/apt/lists/*
 
-
-
 RUN sed -i "s/# en_US.UTF-8/en_US.UTF-8/" /etc/locale.gen \
   && locale-gen
 ENV LANG=en_US.UTF-8
@@ -60,7 +58,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
   
 RUN conda create -n my_env python=3.8
 RUN /bin/bash -c "activate my_env && conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch"
-RUN pip install aim dagit dagster
+RUN pip install aim dagit dagster opencv-python
 
 # Install code-server
 WORKDIR /tmp
