@@ -18,11 +18,7 @@ if [ "${DOCKER_USER-}" ] && [ "$DOCKER_USER" != "$USER" ]; then
   sudo sed -i "/coder/d" /etc/sudoers.d/nopasswd
 fi
 
-rm -rf /projects/main/.aim
-rm -rf /projects/.aim
-echo "source /home/coder/.bashrc && activate my_env"
-# conda activate my_env
-cd /projects && aim init && aim up --host 0.0.0.0 &
-dagit -d /projects/main -f /projects/main/main.py -h 0.0.0.0 &
+# cd /projects && aim init && aim up --host 0.0.0.0 &
+# dagit -d /projects/main -f /projects/main/main.py -h 0.0.0.0 &
 dumb-init /usr/bin/code-server --config /home/coder/config/config.yml "$@"
 

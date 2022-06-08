@@ -1,9 +1,5 @@
 FROM pytorch/pytorch:1.8.1-cuda11.1-cudnn8-devel
-# Issue https://forums.developer.nvidia.com/t/notice-cuda-linux-repository-key-rotation/212772
-RUN rm /etc/apt/sources.list.d/cuda.list
-RUN rm /etc/apt/sources.list.d/nvidia-ml.list
 
-# Install dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   curl \
   ca-certificates \
@@ -23,7 +19,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   lsb-release \
   python \
   python3-pip \
+  python3-opencv \
   && rm -rf /var/lib/apt/lists/*
+
 
 RUN sed -i "s/# ko_KR.UTF-8/ko_KR.UTF-8/" /etc/locale.gen \
   && locale-gen
@@ -45,23 +43,13 @@ RUN curl -fsSL "https://github.com/boxboat/fixuid/releases/download/v0.4.1/fixui
   mkdir -p /etc/fixuid && \
   printf "user: coder\ngroup: coder\n" > /etc/fixuid/config.yml
 
-# Install code-server
-WORKDIR /tmp
-ENV CODE_SERVER_VERSION=3.12.0
-RUN curl -fOL https://github.com/cdr/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server_${CODE_SERVER_VERSION}_${ARCH}.deb
-RUN dpkg -i ./code-server_${CODE_SERVER_VERSION}_${ARCH}.deb && rm ./code-server_${CODE_SERVER_VERSION}_${ARCH}.deb
+#Install code-server
+RUN curl -fOL https://github.com/coder/code-server/releases/download/v$VERSION/code-server_$VERSION_amd64.deb
+RUN sudo dpkg -i code-server_$VERSION_amd64.deb
+RUN sudo systemctl enable --now code-server@$USER
+# Now visit http://127.0.0.1:8080. Your password is in ~/.config/code-server/config.yaml
 
-COPY ./entrypoint.sh /usr/bin/entrypoint.sh
-
-# Switch to default user
-USER coder
-ENV USER=coder
-ENV HOME=/home/coder
-ENV PATH "$PATH:/home/coder/.local/bin"
-# WORKDIR /home/coder
-# RUN pip install 
-WORKDIR /projects
-RUN pip install aim dagit dagster opencv-python
+RUN mkdir /projects
 
 EXPOSE 8080 3000
 ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "--cert", "--disable-telemetry", "."]
