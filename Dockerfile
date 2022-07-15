@@ -64,7 +64,7 @@ ENV PATH "$PATH:/home/coder/.local/bin"
 # RUN pip install 
 WORKDIR /projects
 COPY ./requirements.txt .
-RUN pip install -r ./requirements.txt
+RUN pip install -r requirements.txt
 RUN pip install aim dagit dagster opencv-python
 
 EXPOSE 8080 3000
