@@ -23,6 +23,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   lsb-release \
   python \
   python3-pip \
+  libgl1-mesa-glx \
+  libglib2.0-0 \
   && rm -rf /var/lib/apt/lists/*
 
 RUN sed -i "s/# ko_KR.UTF-8/ko_KR.UTF-8/" /etc/locale.gen \
