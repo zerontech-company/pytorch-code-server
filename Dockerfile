@@ -4,7 +4,7 @@ RUN rm /etc/apt/sources.list.d/cuda.list
 RUN rm /etc/apt/sources.list.d/nvidia-ml.list
 
 # Install dependencies
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update && apt update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   curl \
   ca-certificates \
   dumb-init \
@@ -63,6 +63,8 @@ ENV PATH "$PATH:/home/coder/.local/bin"
 # WORKDIR /home/coder
 # RUN pip install 
 WORKDIR /projects
+COPY ./requirements.txt .
+RUN pip install -r ./requirements.txt
 RUN pip install aim dagit dagster opencv-python
 
 EXPOSE 8080 3000
